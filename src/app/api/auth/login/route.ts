@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { connectDB } from "@/src/db/connection";
+import User from "@/src/models/user.model";
 
 // Define Zod schema for validation
 const loginSchema = z.object({
@@ -10,23 +14,69 @@ const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
+// JWT secret key (store securely in environment variables)
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
+
 // Handle POST request
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json(); // Parse request body
+    // Parse and validate the request body
+    const body = await req.json();
+    const parsedData = loginSchema.parse(body);
 
-    // Validate input using Zod
-    const validatedData = loginSchema.parse(body);
+    const { email, password } = parsedData;
 
-    return NextResponse.json({
+    // Connect to the database
+    await connectDB();
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Compare the provided password with the stored hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, email: user.email }, // Payload
+      JWT_SECRET, // Secret key
+      { expiresIn: "1h" } // Token expiration
+    );
+
+    // Set the token in a cookie
+    const response = NextResponse.json({
       message: "Login successful",
       success: true,
-      data: validatedData,
+      data: { email: user.email, name: user.name }, // Return only safe fields
     });
+    response.cookies.set("token", token, {
+      httpOnly: true, // Prevent client-side access
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      sameSite: "strict", // Prevent CSRF
+      maxAge: 3600, // 1 hour
+    });
+
+    return response;
   } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      // Handle validation errors
+      return NextResponse.json(
+        { error: error.errors.map((e) => e.message) },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: error.errors ?? "Invalid request" },
-      { status: 400 }
+      { error: "An unexpected error occurred" },
+      { status: 500 }
     );
   }
 }
