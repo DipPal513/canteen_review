@@ -80,25 +80,34 @@ export default function RegisterPage() {
       department: "",
       password: "",
       confirmPassword: "",
-    },
+    }
   })
 
   const onSubmit = async (data: RegisterFormValues) => {
-    setIsLoading(true)
-
+    setIsLoading(true);
+  
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // For demo purposes, just show success and redirect
-      toast.success("Registration successful! Please check your email to verify your account.")
-      router.push("/login")
-    } catch (error) {
-      toast.error("Registration failed. Please try again.")
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || "Registration failed");
+      }
+  
+      toast.success("Registration successful! Please check your email to verify your account.");
+      router.push("/login");
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+  
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center bg-gray-50 p-4 py-8">

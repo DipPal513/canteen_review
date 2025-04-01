@@ -1,17 +1,24 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import toast from "react-hot-toast"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { DuLogo } from "@/components/du-logo"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { DuLogo } from "@/components/du-logo";
 
 const loginSchema = z.object({
   email: z
@@ -21,13 +28,13 @@ const loginSchema = z.object({
       message: "Only Dhaka University email addresses (@du.ac.bd) are allowed",
     }),
   password: z.string().min(6, "Password must be at least 6 characters"),
-})
+});
 
-type LoginFormValues = z.infer<typeof loginSchema>
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -39,35 +46,51 @@ export default function LoginPage() {
       email: "",
       password: "",
     },
-  })
+  });
 
   const onSubmit = async (data: LoginFormValues) => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-      // For demo purposes, just show success and redirect
-      toast.success("Login successful!")
-      router.push("/dashboard")
-    } catch (error) {
-      toast.error("Login failed. Please check your credentials.")
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error?.[0]?.message || "Login failed");
+      }
+
+      toast.success("Login successful!");
+      router.push("/dashboard");
+    } catch (error: any) {
+      toast.error(
+        error.message || "Login failed. Please check your credentials."
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center bg-gray-50 p-4">
       <Link href="/" className="mb-8 flex items-center gap-2">
         <DuLogo className="h-10 w-10" />
-        <span className="text-xl font-bold text-[#2E1A73]">DU Student Portal</span>
+        <span className="text-xl font-bold text-[#2E1A73]">
+          DU Student Portal
+        </span>
       </Link>
 
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-[#2E1A73]">Login</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center text-[#2E1A73]">
+            Login
+          </CardTitle>
           <CardDescription className="text-center">
             Enter your DU email and password to access your account
           </CardDescription>
@@ -83,12 +106,17 @@ export default function LoginPage() {
                 {...register("email")}
                 className={errors.email ? "border-red-500" : ""}
               />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" className="text-sm text-[#2E1A73] hover:underline">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-[#2E1A73] hover:underline"
+                >
                   Forgot password?
                 </Link>
               </div>
@@ -98,9 +126,17 @@ export default function LoginPage() {
                 {...register("password")}
                 className={errors.password ? "border-red-500" : ""}
               />
-              {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
-            <Button type="submit" className="w-full bg-[#2E1A73] hover:bg-[#231259]" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full bg-[#2E1A73] hover:bg-[#231259]"
+              disabled={isLoading}
+            >
               {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
@@ -108,13 +144,15 @@ export default function LoginPage() {
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-600">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-[#2E1A73] hover:underline font-medium">
+            <Link
+              href="/register"
+              className="text-[#2E1A73] hover:underline font-medium"
+            >
               Register
             </Link>
           </p>
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
-
