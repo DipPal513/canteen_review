@@ -89,7 +89,7 @@ const mockReviews = [
   },
   {
     id: 5,
-    title: "TSC Canteen Review",
+    title: "TSC Canteen List",
     content:
       "TSC canteen offers a variety of food options at affordable prices. The place gets very crowded during lunch hours, but the service is quick.",
     rating: 4,
