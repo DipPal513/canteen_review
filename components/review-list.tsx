@@ -97,7 +97,7 @@ const mockReviews = [
     itemName: "TSC Canteen",
     author: {
       id: 5,
-      name: "Nusrat Jahan",
+      name: "Nusrat Jahan Sadika",
       department: "Economics",
       year: "3rd Year",
       avatar: "/placeholder.svg?height=40&width=40",
