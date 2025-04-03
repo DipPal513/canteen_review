@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const skip = (page - 1) * limit;
 
     const reviews = await Review.find()
-      .populate("userId", null, null, { strictPopulate: false })
+      .populate("user", null, null, { strictPopulate: false })
       .skip(skip)
       .limit(limit);
     const total = await Review.countDocuments();

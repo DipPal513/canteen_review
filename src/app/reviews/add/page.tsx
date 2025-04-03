@@ -18,7 +18,7 @@ const reviewSchema = z.object({
   canteenName: z.string().min(1, "Canteen name is required"),
   rating: z.string().min(1, "Please select a rating"),
   comment: z.string(),
-  userId: z.string(),
+  user: z.string(),
 
   itemName: z.string().min(2, "Item name must be at least 2 characters"),
   mealTime: z.enum(["Breakfast", "Lunch", "Dinner", "Snacks", "Other"]),
@@ -46,7 +46,7 @@ export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirect
     resolver: zodResolver(reviewSchema),
     defaultValues: {
       canteenName: initialData.canteenName || "",
-      userId:"67ee12f37f5fc118a8ac1fdc",
+      user:"67ee12f37f5fc118a8ac1fdc",
       rating: initialData.rating || "",
       itemName: initialData.itemName || "",
       comment: initialData.comment || "",

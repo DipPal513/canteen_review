@@ -30,7 +30,7 @@ interface Review {
   comment: string;
   mealTime: "Breakfast" | "Snacks" | "Dinner" | "Lunch" | "Other";
   createdAt: Date;
-  userId:Object
+  user: Object;
 }
 
 interface ReviewListProps {
@@ -58,7 +58,6 @@ export function ReviewList({
         const response = await axios.get("/api/reviews");
         let filteredReviews = response.data?.reviews;
 
-    
         // Apply search query filter
         if (searchQuery) {
           const query = searchQuery.toLowerCase();
@@ -69,8 +68,6 @@ export function ReviewList({
               review.itemName.toLowerCase().includes(query)
           );
         }
-
-    
 
         // Apply rating filter
         if (filterRating && filterRating !== "all") {
@@ -168,13 +165,15 @@ export function ReviewList({
             <div className="flex items-center gap-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage
-                  src={"https://user-images.githubusercontent.com/5709133/50445980-88299a80-0912-11e9-962a-6fd92fd18027.png"}
+                  src={
+                    "https://user-images.githubusercontent.com/5709133/50445980-88299a80-0912-11e9-962a-6fd92fd18027.png"
+                  }
                   alt={"DEMO"}
                 />
                 {/* <AvatarFallback>{review.author.name.charAt(0)}</AvatarFallback> */}
               </Avatar>
               <div>
-                <p className="text-sm font-medium">{review.userId.name}</p>
+                <p className="text-sm font-medium">{review?.user?.name}</p>
                 <p className="text-xs text-gray-500">
                   {/* {review.department}, {review.year} */}
                 </p>
@@ -195,7 +194,7 @@ export function ReviewList({
                 className="flex items-center gap-1 text-gray-500"
               >
                 <MessageSquare className="h-4 w-4" />
-                <span>{review.comment}</span>
+                <span></span>
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
