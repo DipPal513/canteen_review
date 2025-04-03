@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 interface IReview extends Document {
-  userId: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
   canteenName: string;
   itemName: string;
   rating: number;
@@ -12,10 +12,10 @@ interface IReview extends Document {
 
 const ReviewSchema: Schema = new Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "User ID is required"],
+      required: [true, "User is required"],
     },
     canteenName: {
       type: String,
@@ -40,7 +40,8 @@ const ReviewSchema: Schema = new Schema(
       required: [true, "Meal time is required"],
       enum: {
         values: ["Breakfast", "Snacks", "Dinner", "Lunch", "Other"],
-        message: "Meal time must be one of Breakfast, Snacks, Dinner, Lunch, or Other",
+        message:
+          "Meal time must be one of Breakfast, Snacks, Dinner, Lunch, or Other",
       },
     },
   },

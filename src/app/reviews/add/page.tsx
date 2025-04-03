@@ -46,9 +46,8 @@ export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirect
     resolver: zodResolver(reviewSchema),
     defaultValues: {
       canteenName: initialData.canteenName || "",
-      userId:"67eba9f61a012b1303513712",
+      userId:"67ee12f37f5fc118a8ac1fdc",
       rating: initialData.rating || "",
-
       itemName: initialData.itemName || "",
       comment: initialData.comment || "",
       mealTime: initialData.mealTime || "Other",

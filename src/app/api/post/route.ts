@@ -6,7 +6,7 @@ import Review from "@/src/models/reviews.model";
 
 // Validation Schema using Zod
 const reviewSchema = z.object({
-    userId: z.string().nonempty("User ID is required"),
+    userId: z.string().nonempty("User id is required"),
     canteenName: z.string().nonempty("Name is required"),
     rating: z
         .number()

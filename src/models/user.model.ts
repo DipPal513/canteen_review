@@ -19,7 +19,11 @@ const UserSchema: Schema = new Schema({
   hall: { type: String, required: true },
   department: { type: String, required: true },
   password: { type: String, required: true },
-  reviews: { type: [String], default: [] }, // New field added
+  reviews: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Review",
+    default: [],
+  }, // Updated to use mongoose ObjectId type
 });
 
 const User = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
