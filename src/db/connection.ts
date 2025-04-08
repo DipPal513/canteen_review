@@ -10,18 +10,19 @@ let cached = (global as any).mongoose || { conn: null, promise: null };
 
 export async function connectDB() {
   if (cached.conn) {
-   
+    console.log("Using cached database connection");
     return cached.conn;
   }
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI, {
       bufferCommands: false,
-    }).then(mongoose => mongoose);
+    }).then(mongoose => {
+      console.log("Database connection established");
+      return mongoose;
+    });
   }
 
   cached.conn = await cached.promise;
   return cached.conn;
 }
-
-

@@ -19,6 +19,8 @@ const UserSchema: Schema = new Schema({
   hall: { type: String, required: true },
   department: { type: String, required: true },
   password: { type: String, required: true },
+  resetPasswordToken: { type: String },
+  resetPasswordExpiry: { type: String },
   reviews: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Review",

@@ -35,7 +35,7 @@ const registerSchema = z
     email: z
       .string()
       .email("Please enter a valid email address")
-      .refine((email) => email.endsWith("@du.ac.bd"), {
+      .refine((email) => email.endsWith("du.ac.bd"), {
         message:
           "Only Dhaka University email addresses (@du.ac.bd) are allowed",
       }),

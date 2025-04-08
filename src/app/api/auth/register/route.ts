@@ -12,7 +12,7 @@ const registerSchema = z
     email: z
       .string()
       .email("Invalid email format")
-      .regex(/@du\.ac\.bd$/, "Only DU email addresses allowed"),
+      .regex(/du\.ac\.bd$/, "Only DU email addresses allowed"),
     phone: z
       .string()
       .regex(/^01[3-9]\d{8}$/, "Invalid Bangladeshi phone number"),

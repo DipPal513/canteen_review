@@ -23,8 +23,8 @@ const loginSchema = z.object({
   email: z
     .string()
     .email("Please enter a valid email address")
-    .refine((email) => email.endsWith("@du.ac.bd"), {
-      message: "Only Dhaka University email addresses (@du.ac.bd) are allowed",
+    .refine((email) => email.endsWith("du.ac.bd"), {
+      message: "Only Dhaka University email addresses (du.ac.bd) are allowed",
     }),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
@@ -101,7 +101,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="your.name@du.ac.bd"
+                placeholder="your.name@dept.du.ac.bd"
                 {...register("email")}
                 className={errors.email ? "border-red-500" : ""}
               />
