@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/src/db/connection";
 import User from "@/src/models/user.model";
+import rateLimit from "express-rate-limit";
+// import { runMiddleware } from "@/src/utils/runMiddleware"; // Utility to run middleware
 
 // Define Zod schema for validation
 const loginSchema = z.object({
@@ -17,9 +19,19 @@ const loginSchema = z.object({
 // JWT secret key (store securely in environment variables)
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
+// Rate limiter middleware
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 requests per windowMs
+  message: { error: "Too many login attempts, please try again later." },
+});
+
 // Handle POST request
 export async function POST(req: NextRequest) {
   try {
+    // Run rate limiter middleware
+    // await runMiddleware(req, limiter);
+
     // Parse and validate the request body
     const body = await req.json();
     const parsedData = loginSchema.parse(body);

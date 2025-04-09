@@ -21,6 +21,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 
 interface Review {
   _id: string;
@@ -50,6 +59,7 @@ export function ReviewList({
 }: ReviewListProps) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [paginationData, setPaginationData] = useState({});
   console.log("reviews: ", reviews);
   useEffect(() => {
     const fetchReviews = async () => {
@@ -57,7 +67,7 @@ export function ReviewList({
       try {
         const response = await axios.get("/api/reviews");
         let filteredReviews = response.data?.reviews;
-
+        setPaginationData(response?.data?.pagination)
         // Apply search query filter
         if (searchQuery) {
           const query = searchQuery.toLowerCase();
@@ -93,6 +103,7 @@ export function ReviewList({
     fetchReviews();
   }, [limit, searchQuery, filterCategory, filterRating, userOnly]);
 
+  console.log(paginationData)
   if (loading) {
     return (
       <div className="space-y-4">
@@ -220,9 +231,23 @@ export function ReviewList({
       ))}
 
       {!limit && reviews?.length > 0 && (
-        <div className="flex justify-center mt-6">
-          <Button variant="outline">Load More</Button>
-        </div>
+       <Pagination>
+       <PaginationContent>
+         <PaginationItem>
+           <PaginationPrevious href="#" />
+         </PaginationItem>
+         <PaginationItem>
+           <PaginationLink href="#">1</PaginationLink>
+         </PaginationItem>
+         <PaginationItem>
+           <PaginationEllipsis />
+         </PaginationItem>
+         <PaginationItem>
+           <PaginationNext href="#" />
+         </PaginationItem>
+       </PaginationContent>
+     </Pagination>
+     
       )}
     </div>
   );

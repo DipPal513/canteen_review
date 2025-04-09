@@ -46,9 +46,29 @@ export async function POST(req: NextRequest) {
       from: "pretom.pal.513@gmail.com",
       to: email,
       subject: "Password Reset Request",
-      text: `Click on this link to generate your new password: 
-        localhost:3000/reset-password/ ${token}`,
+      html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+        <h2 style="color: #1f2937; margin-bottom: 20px;"> Reset Your Password</h2>
+        <p style="color: #374151; margin-bottom: 16px;">
+          Hi there,
+        </p>
+        <p style="color: #374151; margin-bottom: 16px;">
+          We received a request to reset your password. Click the button below to create a new one:
+        </p>
+        <a href="http://localhost:3000/reset-password/${token}" 
+           style="display: inline-block; background-color: #3b82f6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+          Reset Password
+        </a>
+        <p style="color: #6b7280; font-size: 14px; margin-top: 20px;">
+          This link will expire in 30 minutes. If you did not request a password reset, you can safely ignore this email.
+        </p>
+        <p style="margin-top: 30px; color: #9ca3af; font-size: 13px;">
+          — Dip Pal 
+        </p>
+      </div>
+      `,
     };
+    
     await transporter.sendMail(receiver);
 
     return NextResponse.json({
