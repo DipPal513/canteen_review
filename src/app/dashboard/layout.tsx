@@ -2,8 +2,9 @@ import type { ReactNode } from "react"
 import Link from "next/link"
 import { DuLogo } from "@/components/du-logo"
 import { Button } from "@/components/ui/button"
-import { Home, Star, Users, User, LogOut, Menu } from "lucide-react"
+import { Home, Star, Users, User, LogOut, Menu, Plus } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Providers } from "@/src/context/Provider"
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -108,6 +109,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               href="/reviews/add"
               className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700 hover:text-[#2E1A73] pl-10"
             >
+              <Plus  className="h-5 w-5"/>
               <span>Add Review</span>
             </Link>
             <Link
@@ -127,7 +129,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </nav>
         </aside>
 
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-6"><Providers>{children}</Providers></main>
       </div>
     </div>
   )

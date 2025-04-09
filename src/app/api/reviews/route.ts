@@ -34,7 +34,10 @@ export async function GET(request: Request) {
     }
 
     // Fetch data from the database if not cached or if Redis failed
-    const reviews = await Review.find().populate("user", null, null, { strictPopulate: false }).skip(skip).limit(limit)
+    const reviews = await Review.find()
+      .populate("user", "_id name department email hall", null, { strictPopulate: false })
+      .skip(skip)
+      .limit(limit)
     const total = await Review.countDocuments()
 
     const responseData = {

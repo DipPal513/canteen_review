@@ -41,7 +41,7 @@ export function UserList({
       try {
         const response = await axios.get<User[]>("/api/users");
         let filteredUsers = response.data.data;
-        console.log(response)
+      
 
         // Apply search query filter
         if (searchQuery) {

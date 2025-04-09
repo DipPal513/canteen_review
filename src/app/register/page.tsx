@@ -112,14 +112,14 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormValues) => {
     connectDB();
     setIsLoading(true);
-    console.log("data: ", data);
+    
     try {
       const response = await axios.post("/api/auth/register", data, {
         headers: { "Content-Type": "application/json" },
       });
 
       const result = response.data;
-      console.log("result: ", result);
+      
       if (response.status !== 100) {
         throw new Error(result.message || "Registration failed");
       }
@@ -128,7 +128,7 @@ export default function RegisterPage() {
       );
       router.push("/login");
     } catch (error: any) {
-      console.log("this is error: ", error);
+      
       toast.error(error.message || "Something went wrong");
     } finally {
       setIsLoading(false);

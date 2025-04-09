@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     const parsedData = forgotPasswordSchema.parse(body);
 
     const { email } = parsedData;
-    console.log("Email: ", email);
+   
 
     await connectDB();
 
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       success: true,
     });
   } catch (error: any) {
-    console.log("this is error: ", error);
+    
     if (error instanceof z.ZodError) {
       // Handle validation errors
       return NextResponse.json(

@@ -1,17 +1,30 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import toast from "react-hot-toast"
-import { z } from "zod"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useAppContext } from "@/src/context/AppContext";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { z } from "zod";
 
 // Schema definition for review form validation
 const reviewSchema = z.object({
@@ -22,20 +35,24 @@ const reviewSchema = z.object({
 
   itemName: z.string().min(2, "Item name must be at least 2 characters"),
   mealTime: z.enum(["Breakfast", "Lunch", "Dinner", "Snacks", "Other"]),
-})
+});
 
-export type ReviewFormValues = z.infer<typeof reviewSchema>
+export type ReviewFormValues = z.infer<typeof reviewSchema>;
 
 interface ReviewFormProps {
-  onSubmitSuccess?: (data: ReviewFormValues) => void
-  initialData?: Partial<ReviewFormValues>
-  redirectPath?: string
+  onSubmitSuccess?: (data: ReviewFormValues) => void;
+  initialData?: Partial<ReviewFormValues>;
+  redirectPath?: string;
 }
 
-export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirectPath = "/reviews" }: ReviewFormProps) {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-
+export default function ReviewForm({
+  onSubmitSuccess,
+  initialData = {},
+  redirectPath = "/reviews",
+}: ReviewFormProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const { user: userData } = useAppContext();
   const {
     register,
     handleSubmit,
@@ -46,19 +63,19 @@ export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirect
     resolver: zodResolver(reviewSchema),
     defaultValues: {
       canteenName: initialData.canteenName || "",
-      user:"67ee12f37f5fc118a8ac1fdc",
+      user: userData?._id || "",
       rating: initialData.rating || "",
       itemName: initialData.itemName || "",
       comment: initialData.comment || "",
       mealTime: initialData.mealTime || "Other",
     },
-  })
+  });
 
   const onSubmit = async (data: ReviewFormValues) => {
-    console.log("Form submitted with data:", data)
-    setIsLoading(true)
+    
+    setIsLoading(true);
 
-    console.log("triggering")
+    
     try {
       const response = await fetch("/api/post", {
         method: "POST",
@@ -66,39 +83,49 @@ export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirect
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-      })
+      });
 
       if (!response.ok) {
-        console.log("response : ",response)
-        throw new Error("Failed to submit review")
+        
+        throw new Error("Failed to submit review");
       }
 
-      toast.success("Review submitted successfully!")
+      toast.success("Review submitted successfully!");
 
       if (onSubmitSuccess) {
-        onSubmitSuccess(data)
+        onSubmitSuccess(data);
       } else {
-        router.push(redirectPath)
+        router.push(redirectPath);
       }
     } catch (error) {
-      console.error("Error submitting review:", error)
-      toast.error("Failed to submit review. Please try again.")
+      console.error("Error submitting review:", error);
+      toast.error("Failed to submit review. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Categories for the dropdown
-  const categories = ["North Indian", "South Indian", "Chinese", "Fast Food", "Beverages", "Desserts", "Other"]
+  const categories = [
+    "North Indian",
+    "South Indian",
+    "Chinese",
+    "Fast Food",
+    "Beverages",
+    "Desserts",
+    "Other",
+  ];
 
   // Meal times for the dropdown
-  const mealTimes = ["Breakfast", "Lunch", "Dinner", "Snacks", "Other"]
+  const mealTimes = ["Breakfast", "Lunch", "Dinner", "Snacks", "Other"];
 
   return (
     <Card className="shadow-lg border-t-4 border-t-primary">
       <CardHeader>
         <CardTitle>New Review</CardTitle>
-        <CardDescription>Fill out the form below to add your review</CardDescription>
+        <CardDescription>
+          Fill out the form below to add your review
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -110,7 +137,11 @@ export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirect
               {...register("canteenName")}
               className={errors.canteenName ? "border-red-500" : ""}
             />
-            {errors.canteenName && <p className="text-red-500 text-sm">{errors.canteenName.message}</p>}
+            {errors.canteenName && (
+              <p className="text-red-500 text-sm">
+                {errors.canteenName.message}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -121,7 +152,9 @@ export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirect
               {...register("itemName")}
               className={errors.itemName ? "border-red-500" : ""}
             />
-            {errors.itemName && <p className="text-red-500 text-sm">{errors.itemName.message}</p>}
+            {errors.itemName && (
+              <p className="text-red-500 text-sm">{errors.itemName.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -143,7 +176,11 @@ export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirect
                     width="24"
                     height="24"
                     viewBox="0 0 24 24"
-                    fill={watch("rating") >= rating.toString() ? "currentColor" : "none"}
+                    fill={
+                      watch("rating") >= rating.toString()
+                        ? "currentColor"
+                        : "none"
+                    }
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
@@ -155,13 +192,20 @@ export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirect
                 </button>
               ))}
             </div>
-            {errors.rating && <p className="text-red-500 text-sm">{errors.rating.message}</p>}
+            {errors.rating && (
+              <p className="text-red-500 text-sm">{errors.rating.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="mealTime">Meal Time</Label>
-            <Select onValueChange={(value) => setValue("mealTime", value)} defaultValue={initialData.mealTime || ""}>
-              <SelectTrigger className={errors.mealTime ? "border-red-500" : ""}>
+            <Select
+              onValueChange={(value) => setValue("mealTime", value as "Breakfast" | "Lunch" | "Dinner" | "Snacks" | "Other")}
+              defaultValue={initialData.mealTime || ""}
+            >
+              <SelectTrigger
+                className={errors.mealTime ? "border-red-500" : ""}
+              >
                 <SelectValue placeholder="Select a meal time" />
               </SelectTrigger>
               <SelectContent>
@@ -172,7 +216,9 @@ export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirect
                 ))}
               </SelectContent>
             </Select>
-            {errors.mealTime && <p className="text-red-500 text-sm">{errors.mealTime.message}</p>}
+            {errors.mealTime && (
+              <p className="text-red-500 text-sm">{errors.mealTime.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -184,14 +230,26 @@ export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirect
               {...register("comment")}
               className={errors.comment ? "border-red-500" : ""}
             />
-            {errors.comment && <p className="text-red-500 text-sm">{errors.comment.message}</p>}
+            {errors.comment && (
+              <p className="text-red-500 text-sm">{errors.comment.message}</p>
+            )}
           </div>
 
           <div className="flex justify-end space-x-4 pt-4">
-            <Button type="button" variant="outline" onClick={() => router.back()} disabled={isLoading} className="px-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+              disabled={isLoading}
+              className="px-6"
+            >
               Cancel
             </Button>
-            <Button type="submit" className="bg-primary hover:bg-primary/90 px-6" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="bg-primary hover:bg-primary/90 px-6"
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <>
                   <svg
@@ -224,6 +282,5 @@ export default function ReviewForm({ onSubmitSuccess, initialData = {}, redirect
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }
-

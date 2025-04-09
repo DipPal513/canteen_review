@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAppContext } from "@/src/context/AppContext";
 import {
   Pagination,
   PaginationContent,
@@ -29,7 +30,19 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface Review {
   _id: string;
@@ -38,8 +51,19 @@ interface Review {
   rating: number;
   comment: string;
   mealTime: "Breakfast" | "Snacks" | "Dinner" | "Lunch" | "Other";
-  createdAt: Date;
-  user: Object;
+  createdAt: string;
+  user: {
+    _id: string;
+    name: string;
+    [key: string]: any;
+  };
+}
+
+interface PaginationData {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
 }
 
 interface ReviewListProps {
@@ -59,51 +83,103 @@ export function ReviewList({
 }: ReviewListProps) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
-  const [paginationData, setPaginationData] = useState({});
-  console.log("reviews: ", reviews);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paginationData, setPaginationData] = useState<PaginationData>({
+    page: 1,
+    limit: 10,
+    totalItems: 0,
+    totalPages: 1,
+  });
+  // Safely access context or provide fallback
+  const appContext = useAppContext();
+  const { user } = appContext;
+  const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
+  const router = useRouter();
+
   useEffect(() => {
     const fetchReviews = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("/api/reviews");
-        let filteredReviews = response.data?.reviews;
-        setPaginationData(response?.data?.pagination)
-        // Apply search query filter
+        // Build query parameters
+        const queryParams = new URLSearchParams();
+        queryParams.append("page", currentPage.toString());
+        queryParams.append("limit", limit ? limit.toString() : "10");
+
         if (searchQuery) {
-          const query = searchQuery.toLowerCase();
-          filteredReviews = filteredReviews.filter(
-            (review: Review) =>
-              review.comment.toLowerCase().includes(query) ||
-              review.mealTime.toLowerCase().includes(query) ||
-              review.itemName.toLowerCase().includes(query)
-          );
+          queryParams.append("search", searchQuery);
         }
 
-        // Apply rating filter
+        if (filterCategory && filterCategory !== "all") {
+          queryParams.append("category", filterCategory);
+        }
+
         if (filterRating && filterRating !== "all") {
-          const minRating = Number.parseInt(filterRating);
-          filteredReviews = filteredReviews.filter(
-            (review: Review) => review.rating >= minRating
-          );
+          queryParams.append("minRating", filterRating);
         }
 
-        // Apply limit if provided
-        if (limit) {
-          filteredReviews = filteredReviews.slice(0, limit);
+        if (userOnly && user?._id) {
+          queryParams.append("userId", user?._id);
         }
 
-        setReviews(filteredReviews);
+        const response = await axios.get(
+          `/api/reviews?${queryParams.toString()}`
+        );
+        // Make sure we're setting reviews to an array, even if the response is unexpected
+        setReviews(
+          Array.isArray(response.data.reviews) ? response.data.reviews : []
+        );
+        setPaginationData(
+          response.data.pagination || {
+            page: 1,
+            limit: 10,
+            totalItems: 0,
+            totalPages: 1,
+          }
+        );
       } catch (error) {
         console.error("Failed to fetch reviews:", error);
+        // Ensure reviews is set to an empty array on error
+        setReviews([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchReviews();
-  }, [limit, searchQuery, filterCategory, filterRating, userOnly]);
+  }, [
+    currentPage,
+    limit,
+    searchQuery,
+    filterCategory,
+    filterRating,
+    userOnly,
+    user?._id || null,
+  ]);
 
-  console.log(paginationData)
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleReviewDelete = async (reviewId: string) => {
+    try {
+      const res = await axios.delete(`/api/delete-review?id=${reviewId}`);
+      // Remove the deleted review from the state
+
+      if (res.status == 200) {
+        setReviews(reviews.filter((review) => review._id !== reviewId));
+        setReviewToDelete(null);
+        toast.success("Review deleted successfully!");
+      }
+    } catch (error) {
+      console.error("Failed to delete review:", error);
+      toast.error("Error Deleting Review!");
+    }
+  };
+
+  const handleEditReview = (reviewId: string) => {
+    router.push(`/edit-review?id=${reviewId}`);
+  };
+
   if (loading) {
     return (
       <div className="space-y-4">
@@ -124,7 +200,7 @@ export function ReviewList({
     );
   }
 
-  if (reviews?.length === 0) {
+  if (reviews.length === 0) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-10">
@@ -141,114 +217,217 @@ export function ReviewList({
 
   return (
     <div className="space-y-4">
-      {reviews?.map((review) => (
-        <Card key={review._id}>
-          <CardHeader className="pb-2">
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle className="text-lg">{review.canteenName}</CardTitle>
-                <CardDescription className="flex items-center gap-1 mt-1">
-                  <Badge variant="outline" className="capitalize">
-                    {/* {review.category} */}
-                  </Badge>
-                  <span className="mx-1">•</span>
-                  {review.itemName}
-                </CardDescription>
+      {reviews &&
+        reviews.map((review) => (
+          <Card key={review?._id}>
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle className="text-lg">
+                    {review?.canteenName}
+                  </CardTitle>
+                  <CardDescription className="flex items-center gap-1 mt-1">
+                    <Badge variant="outline" className="capitalize">
+                      {review?.mealTime}
+                    </Badge>
+                    <span className="mx-1">•</span>
+                    {review?.itemName}
+                  </CardDescription>
+                </div>
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-4 w-4 ${
+                        i < review?.rating
+                          ? "text-yellow-500 fill-yellow-500"
+                          : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 ${
-                      i < review.rating
-                        ? "text-yellow-500 fill-yellow-500"
-                        : "text-gray-300"
-                    }`}
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700">{review?.comment}</p>
+            </CardContent>
+            <CardFooter className="flex justify-between pt-2 border-t">
+              <div className="flex items-center gap-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={
+                      "https://user-images.githubusercontent.com/5709133/50445980-88299a80-0912-11e9-962a-6fd92fd18027.png"
+                    }
+                    alt={review?.user?.name}
                   />
-                ))}
+                  <AvatarFallback>
+                    {review?.user?.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">{review?.user?.name}</p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(review?.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700">{review.comment}</p>
-          </CardContent>
-          <CardFooter className="flex justify-between pt-2 border-t">
-            <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src={
-                    "https://user-images.githubusercontent.com/5709133/50445980-88299a80-0912-11e9-962a-6fd92fd18027.png"
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-1 text-gray-500"
+                >
+                  <ThumbsUp className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-1 text-gray-500"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="text-gray-500">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>Report</DropdownMenuItem>
+                    {review?.user?._id === user?._id && (
+                      <>
+                        <DropdownMenuItem
+                          onClick={() => handleEditReview(review._id)}
+                        >
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-red-500"
+                          onClick={() => setReviewToDelete(review._id)}
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </CardFooter>
+          </Card>
+        ))}
+
+      {!limit &&
+        reviews &&
+        reviews.length > 0 &&
+        paginationData.totalPages > 1 && (
+          <div className="flex justify-center mt-6">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() =>
+                      handlePageChange(Math.max(1, currentPage - 1))
+                    }
+                    className={
+                      currentPage === 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+
+                {Array.from(
+                  { length: Math.min(5, paginationData.totalPages) },
+                  (_, i) => {
+                    // Logic to show pages around current page
+                    let pageNum;
+                    if (paginationData.totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= paginationData.totalPages - 2) {
+                      pageNum = paginationData.totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+
+                    return (
+                      <PaginationItem key={pageNum}>
+                        <PaginationLink
+                          onClick={() => handlePageChange(pageNum)}
+                          isActive={pageNum === currentPage}
+                        >
+                          {pageNum}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
                   }
-                  alt={"DEMO"}
-                />
-                {/* <AvatarFallback>{review.author.name.charAt(0)}</AvatarFallback> */}
-              </Avatar>
-              <div>
-                <p className="text-sm font-medium">{review?.user?.name}</p>
-                <p className="text-xs text-gray-500">
-                  {/* {review.department}, {review.year} */}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center gap-1 text-gray-500"
-              >
-                <ThumbsUp className="h-4 w-4" />
-                {/* <span>{review.likes}</span> */}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center gap-1 text-gray-500"
-              >
-                <MessageSquare className="h-4 w-4" />
-                <span></span>
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-gray-500">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>Report</DropdownMenuItem>
-                  {userOnly && (
+                )}
+
+                {paginationData.totalPages > 5 &&
+                  currentPage < paginationData.totalPages - 2 && (
                     <>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-500">
-                        Delete
-                      </DropdownMenuItem>
+                      <PaginationItem>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                      <PaginationItem>
+                        <PaginationLink
+                          onClick={() =>
+                            handlePageChange(paginationData.totalPages)
+                          }
+                        >
+                          {paginationData.totalPages}
+                        </PaginationLink>
+                      </PaginationItem>
                     </>
                   )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </CardFooter>
-        </Card>
-      ))}
 
-      {!limit && reviews?.length > 0 && (
-       <Pagination>
-       <PaginationContent>
-         <PaginationItem>
-           <PaginationPrevious href="#" />
-         </PaginationItem>
-         <PaginationItem>
-           <PaginationLink href="#">1</PaginationLink>
-         </PaginationItem>
-         <PaginationItem>
-           <PaginationEllipsis />
-         </PaginationItem>
-         <PaginationItem>
-           <PaginationNext href="#" />
-         </PaginationItem>
-       </PaginationContent>
-     </Pagination>
-     
-      )}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      handlePageChange(
+                        Math.min(paginationData.totalPages, currentPage + 1)
+                      )
+                    }
+                    className={
+                      currentPage === paginationData.totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!reviewToDelete}
+        onOpenChange={(open) => !open && setReviewToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to delete this review?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              review.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() =>
+                reviewToDelete && handleReviewDelete(reviewToDelete)
+              }
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

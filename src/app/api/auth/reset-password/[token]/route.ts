@@ -32,16 +32,15 @@ export async function POST(req: NextRequest) {
     try {
       
       await connectDB();
-      console.log("JWT Token:", token);
-      console.log("JWT Secret:", JWT_SECRET);
+    
 
       const decoded = jwt.verify(token, JWT_SECRET) as { email: string };
-      console.log("Decoded Payload:", decoded);
+     
 
       email = decoded.email;
 
     } catch (err) {
-      console.log("error ", err);
+     
       return NextResponse.json(
         { error: "Invalid or expired token" },
         { status: 400 }

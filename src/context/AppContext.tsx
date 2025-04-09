@@ -1,5 +1,4 @@
 "use client";
-
 import {
   createContext,
   useState,
@@ -8,12 +7,14 @@ import {
   useEffect,
 } from "react";
 import Cookies from "js-cookie";
+import axios from "axios";
 
 // Define the shape of your context
 interface AppContextType {
   user: string | null;
   setUser: (user: string | null) => void;
   loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 
 // Create Context
@@ -21,6 +22,7 @@ const AppContext = createContext<AppContextType>({
   user: null,
   setUser: () => {},
   loading: false,
+  setLoading: () => {},
 });
 
 // Provider Component
@@ -32,23 +34,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const fetchUser = async () => {
       const token = Cookies.get("token");
 
-      if (!token) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
+      // if (!token) {
+      //   setUser(null);
+      //   console.log("there is no token")
+      //   setLoading(false);
+      //   return;
+      // }
 
       try {
-        const response = await fetch("/api/auth/me");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-
-        const data = await response.json();
-        setUser(data.user); // Ensure API returns { user: "..." }
+        const { data } = await axios.get("/api/auth/me");
+        
+        setUser(data); // Ensure API returns { user: "..." }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching user data:", error);
         setUser(null);
       } finally {
         setLoading(false);
@@ -59,7 +57,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AppContext.Provider value={{ user, setUser, loading }}>
+    <AppContext.Provider value={{ user, setUser, loading, setLoading }}>
       {children}
     </AppContext.Provider>
   );
