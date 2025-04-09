@@ -47,6 +47,8 @@ export default function LoginPage() {
     },
   });
 
+  //npx shadcn@latest add "https://v0.dev/chat/b/b_OfHke1XCKyv?token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..0g0cudILGTpETQqj.CJpNU5oUjoG9r5lHbbphpJM6sQEqqmk6mxAGbBrxgb5vC7CzwKovN75zRTs.jFrVi00yEM6N8HfeRTtyXQ"
+
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
 
@@ -61,7 +63,7 @@ export default function LoginPage() {
 
       const result = await response.json();
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(result.error?.[0]?.message || "Login failed");
       }
 

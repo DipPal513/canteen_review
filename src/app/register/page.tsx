@@ -120,11 +120,11 @@ export default function RegisterPage() {
 
       const result = response.data;
       
-      if (response.status !== 100) {
+      if (response.status !== 201) {
         throw new Error(result.message || "Registration failed");
       }
       toast.success(
-        "Registration successful! Please check your email to verify your account."
+        "Registration successful!"
       );
       router.push("/login");
     } catch (error: any) {
