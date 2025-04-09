@@ -63,7 +63,7 @@ export default function ReviewForm({
     resolver: zodResolver(reviewSchema),
     defaultValues: {
       canteenName: initialData.canteenName || "",
-      user: userData?._id || "",
+      user: userData?._id,
       rating: initialData.rating || "",
       itemName: initialData.itemName || "",
       comment: initialData.comment || "",
