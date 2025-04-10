@@ -64,6 +64,7 @@ export default function LoginPage() {
       const result = await response.json();
 
       if (response.status !== 200) {
+        toast.error("something went wrong!");
         throw new Error(result.error?.[0]?.message || "Login failed");
       }
 

@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     });
     response.cookies.set("token", token, {
       httpOnly: true, // Prevent client-side access
-      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      secure: true, // Use secure cookies in production
       sameSite: "strict", // Prevent CSRF
       maxAge: 3600, // 1 hour
     });

@@ -16,22 +16,29 @@ export default function Home() {
         </div>
         <div className="flex gap-4">
           {user ? (
-            <p>{user.name}</p>
+            <>
+              {" "}
+              <p>{user?.name}</p>
+              <Link href={"/dashboard"} className="bg-indigo-400 rounded-md px-3 py-1">Dashboard</Link>
+            </>
           ) : (
-            <Link href="/login">
-              <Button
-                variant="outline"
-                className="text-black border-white hover:bg-white/20"
-              >
-                Login
-              </Button>
-            </Link>
+            <>
+              <Link href="/login">
+                <Button
+                  variant="outline"
+                  className="text-black border-white hover:bg-white/20"
+                >
+                  Login
+                </Button>
+              </Link>
+
+              <Link href="/register">
+                <Button className="bg-white text-[#2E1A73] hover:bg-white/90">
+                  Register
+                </Button>
+              </Link>
+            </>
           )}
-          <Link href="/register">
-            <Button className="bg-white text-[#2E1A73] hover:bg-white/90">
-              Register
-            </Button>
-          </Link>
         </div>
       </header>
       <main className="flex-1 container mx-auto py-8 px-4">
@@ -107,28 +114,44 @@ export default function Home() {
         </section>
       </main>
       <footer className="bg-[#2E1A73] text-white py-6 px-4">
-  <div className="container mx-auto">
-    <div className="flex flex-col md:flex-row justify-between items-center">
-      <div className="flex items-center gap-2 mb-4 md:mb-0">
-        <DuLogo className="h-8 w-8" />
-        <span className="font-semibold">DU Student Portal</span>
-      </div>
-      <div className="text-sm text-white/80 text-center">
-        &copy; {new Date().getFullYear()} All rights reserved by <Link href={"www.dippal.vercel.app"}>DIP PAL</Link>. Connect with me: 
-        <a href="https://twitter.com/yourhandle" target="_blank" rel="noopener noreferrer" className="text-white underline mx-1">
-          Twitter
-        </a>
-        <a href="https://github.com/yourhandle" target="_blank" rel="noopener noreferrer" className="text-white underline mx-1">
-          GitHub
-        </a>
-        <a href="https://linkedin.com/in/yourhandle" target="_blank" rel="noopener noreferrer" className="text-white underline mx-1">
-          LinkedIn
-        </a>
-      </div>
-    </div>
-  </div>
-</footer>
-
+        <div className="container mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center gap-2 mb-4 md:mb-0">
+              <DuLogo className="h-8 w-8" />
+              <span className="font-semibold">DU Student Portal</span>
+            </div>
+            <div className="text-sm text-white/80 text-center">
+              &copy; {new Date().getFullYear()} All rights reserved by{" "}
+              <Link href={"www.dippal.vercel.app"}>DIP PAL</Link>. Connect with
+              me:
+              <a
+                href="https://twitter.com/yourhandle"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white underline mx-1"
+              >
+                Twitter
+              </a>
+              <a
+                href="https://github.com/yourhandle"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white underline mx-1"
+              >
+                GitHub
+              </a>
+              <a
+                href="https://linkedin.com/in/yourhandle"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white underline mx-1"
+              >
+                LinkedIn
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
