@@ -17,11 +17,23 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     setShowLogoutModal(true);
   };
 
-  const confirmLogout = () => {
-    Cookies.remove("token"); 
-    toast.success("Logged out successfully!");
-    setShowLogoutModal(false);
-    router.push('/login') // Redirect to login page
+  const confirmLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response?.success) {
+        toast.success("Logged out successfully!");
+        setShowLogoutModal(false);
+        router.push("/login"); // Redirect to login page
+      } else {
+        toast.error("Failed to log out. Please try again.");
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+    }
   };
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -111,7 +123,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   <div>
                     <Button
                       variant="outline"
-                      className="w-full border-white text-white/10 hover:text-white hover:bg-white/10 flex items-center gap-2"onClick={() => handleLogout()}
+                      className="w-full border-white text-white/10 hover:text-white hover:bg-white/10 flex items-center gap-2"
+                      onClick={() => handleLogout()}
                     >
                       <LogOut className="h-4 w-4" />
                       <span>Logout</span>
