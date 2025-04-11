@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-
+import "@/src/models/index";
 interface IReview extends Document {
   user: mongoose.Types.ObjectId;
   canteenName: string;

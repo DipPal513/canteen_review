@@ -1,16 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import axios from "axios";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -19,6 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -26,8 +18,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DuLogo } from "@/components/du-logo";
 import { connectDB } from "@/src/db/connection";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { z } from "zod";
 
 const registerSchema = z
   .object({
@@ -112,23 +111,21 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormValues) => {
     connectDB();
     setIsLoading(true);
-    
+
     try {
       const response = await axios.post("/api/auth/register", data, {
         headers: { "Content-Type": "application/json" },
       });
 
       const result = response.data;
-      
+
       if (response.status !== 201) {
+        toast.error(response.message)
         throw new Error(result.message || "Registration failed");
       }
-      toast.success(
-        "Registration successful!"
-      );
+      toast.success("Registration successful!");
       router.push("/login");
     } catch (error: any) {
-      
       toast.error(error.message || "Something went wrong");
     } finally {
       setIsLoading(false);
@@ -138,9 +135,9 @@ export default function RegisterPage() {
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center bg-gray-50 p-4 py-8">
       <Link href="/" className="mb-6 flex items-center gap-2">
-        <DuLogo className="h-10 w-10" />
+        <img src="/logo.png" width={50} alt="logo" />
         <span className="text-xl font-bold text-[#2E1A73]">
-          DU Student Portal
+          DU Canteen Review
         </span>
       </Link>
 
@@ -150,7 +147,7 @@ export default function RegisterPage() {
             Create an Account
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your details to register for DU Student Portal
+            Enter your details to register for DU Canteen Review
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-// Adjust the path to your connectdb function
-import User from "@/src/models/user.model"; // Adjust the path to your User schema
-import bcrypt from "bcrypt"; // Import bcrypt for password hashing
+import User from "@/src/models/user.model";
+import bcrypt from "bcrypt";
 import { connectDB } from "@/src/db/connection";
 
-// Define Zod schema for validation
 const registerSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -27,7 +25,6 @@ const registerSchema = z
     path: ["confirmPassword"],
   });
 
-// Handle POST request for registration
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -42,8 +39,8 @@ export async function POST(req: NextRequest) {
     const existingUser = await User.findOne({ email: validatedData.email });
     if (existingUser) {
       return NextResponse.json(
-        { error: "User with this email already exists" },
-        { status: 400 }
+        { message: "User with this email already exists", success: false },
+        { status: 409 } // Conflict status code
       );
     }
 
@@ -58,7 +55,7 @@ export async function POST(req: NextRequest) {
       year: validatedData.year,
       hall: validatedData.hall,
       department: validatedData.department,
-      password: hashedPassword, // Save the hashed password
+      password: hashedPassword,
     });
 
     await newUser.save();
@@ -68,9 +65,29 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      // Handle validation errors
+      return NextResponse.json(
+        {
+          message: "Validation failed",
+          success: false,
+          errors: error.errors.map((err) => ({
+            path: err.path.join("."),
+            message: err.message,
+          })),
+        },
+        { status: 422 } // Unprocessable Entity status code
+      );
+    }
+
+    // Handle other errors
     return NextResponse.json(
-      { error: error.errors ?? "Invalid request" },
-      { status: 400 }
+      {
+        message: "An unexpected error occurred",
+        success: false,
+        error: error.message || "Unknown error",
+      },
+      { status: 500 } // Internal Server Error status code
     );
   }
 }

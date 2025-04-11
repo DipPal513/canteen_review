@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 export async function GET() {
   try {
     const token = cookies().get("token")?.value;
-    
+
     if (!token) {
       return NextResponse.json(
         { message: "Not authenticated" },
@@ -19,12 +19,12 @@ export async function GET() {
 
     // Verify token
     const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
-    
+
     await connectDB();
 
     // Find user
-    const user = await User.findById(decoded.id);
-    
+    const user = await User.findById(decoded.id).populate("reviews");
+
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }

@@ -1,16 +1,28 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ReviewList } from "@/components/review-list"
-import { Star, Users, PenSquare } from "lucide-react"
+"use client";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ReviewList } from "@/components/review-list";
+import { Star, Users, PenSquare } from "lucide-react";
+import { useAppContext } from "@/src/context/AppContext";
 
 export default function DashboardPage() {
+  const { user, loading } = useAppContext();
+  console.log("user", user);
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
         <Link href="/reviews/add">
-          <Button className="bg-[#2E1A73] hover:bg-[#231259]">Add Review</Button>
+          <Button className="bg-[#2E1A73] hover:bg-[#231259]">
+            Add Review
+          </Button>
         </Link>
       </div>
 
@@ -21,8 +33,10 @@ export default function DashboardPage() {
             <Star className="h-4 w-4 text-[#2E1A73]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">24</div>
-            <p className="text-xs text-muted-foreground">+12% from last month</p>
+            <div className="text-2xl font-bold">{user?.reviews?.length}</div>
+            <p className="text-xs text-muted-foreground">
+              +12% from last month
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -32,7 +46,9 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">573</div>
-            <p className="text-xs text-muted-foreground">+18% from last month</p>
+            <p className="text-xs text-muted-foreground">
+              +18% from last month
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -68,35 +84,45 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Jagannath Hall</p>
-                  <p className="text-xs text-muted-foreground">128 active users</p>
+                  <p className="text-xs text-muted-foreground">
+                    128 active users
+                  </p>
                 </div>
                 <div className="font-bold text-[#2E1A73]">4.8</div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Fazlul Huq Muslim Hall</p>
-                  <p className="text-xs text-muted-foreground">112 active users</p>
+                  <p className="text-xs text-muted-foreground">
+                    112 active users
+                  </p>
                 </div>
                 <div className="font-bold text-[#2E1A73]">4.7</div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Rokeya Hall</p>
-                  <p className="text-xs text-muted-foreground">98 active users</p>
+                  <p className="text-xs text-muted-foreground">
+                    98 active users
+                  </p>
                 </div>
                 <div className="font-bold text-[#2E1A73]">4.6</div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Bangabandhu Hall</p>
-                  <p className="text-xs text-muted-foreground">87 active users</p>
+                  <p className="text-xs text-muted-foreground">
+                    87 active users
+                  </p>
                 </div>
                 <div className="font-bold text-[#2E1A73]">4.5</div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Kabi Jasimuddin Hall</p>
-                  <p className="text-xs text-muted-foreground">76 active users</p>
+                  <p className="text-xs text-muted-foreground">
+                    76 active users
+                  </p>
                 </div>
                 <div className="font-bold text-[#2E1A73]">4.4</div>
               </div>
@@ -105,5 +131,5 @@ export default function DashboardPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

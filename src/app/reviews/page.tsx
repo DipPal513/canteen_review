@@ -81,7 +81,7 @@ export default function ReviewsPage() {
         </CardContent>
       </Card>
 
-      <ReviewList searchQuery={searchQuery} filterCategory={filterCategory} filterRating={filterRating} />
+      <ReviewList userOnly={false} searchQuery={searchQuery} filterCategory={filterCategory} filterRating={filterRating} />
     </div>
   )
 }

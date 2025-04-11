@@ -1,8 +1,7 @@
 "use client";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { DuLogo } from "@/components/du-logo";
 import { ReviewList } from "@/components/review-list";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { useAppContext } from "../context/AppContext";
 
 export default function Home() {
@@ -11,22 +10,27 @@ export default function Home() {
     <div className="min-h-dvh flex flex-col">
       <header className="bg-[#2E1A73] text-white py-4 px-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <DuLogo className="h-10 w-10" />
-          <h1 className="text-xl font-bold">DU Student Portal</h1>
+          <img src="/logo.png" width={50} alt="logo" />
+          <h1 className="text-sm sm:text-xl font-bold">DU Canteen Review</h1>
         </div>
         <div className="flex gap-4">
           {user ? (
             <>
               {" "}
-              <p>{user?.name}</p>
-              <Link href={"/dashboard"} className="bg-indigo-400 rounded-md px-3 py-1">Dashboard</Link>
+              <p className="hidden sm:flex text-sm sm:text-md font-bold">{user?.name}</p>
+              <Link
+                href={"/dashboard"}
+                className="bg-indigo-400 hover:bg-indigo-800 rounded-md px-2 sm:px-3 py-1 text-sm sm:text-lg"
+              >
+                Dashboard
+              </Link>
             </>
           ) : (
             <>
               <Link href="/login">
                 <Button
                   variant="outline"
-                  className="text-black border-white hover:bg-white/20"
+                  className="text-black border-white hover:bg-white/20 hover:text-white"
                 >
                   Login
                 </Button>
@@ -117,8 +121,9 @@ export default function Home() {
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-4 md:mb-0">
-              <DuLogo className="h-8 w-8" />
-              <span className="font-semibold">DU Student Portal</span>
+            <img src="/logo.png" 
+          width={50}alt="logo" />
+              <span className="font-semibold">DU Canteen Review</span>
             </div>
             <div className="text-sm text-white/80 text-center">
               &copy; {new Date().getFullYear()} All rights reserved by{" "}

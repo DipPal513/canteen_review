@@ -1,14 +1,5 @@
 "use client";
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -17,7 +8,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DuLogo } from "@/components/du-logo";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { z } from "zod";
 
 const loginSchema = z.object({
   email: z
@@ -82,9 +81,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center bg-gray-50 p-4">
       <Link href="/" className="mb-8 flex items-center gap-2">
-        <DuLogo className="h-10 w-10" />
+        <img src="/logo.png" width={50} alt="logo" />
         <span className="text-xl font-bold text-[#2E1A73]">
-          DU Student Portal
+          DU Canteen Review
         </span>
       </Link>
 

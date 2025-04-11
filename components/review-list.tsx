@@ -89,6 +89,7 @@ export function ReviewList({
     limit: 10,
     totalItems: 0,
     totalPages: 1,
+    
   });
   // Safely access context or provide fallback
   const appContext = useAppContext();
@@ -122,12 +123,13 @@ export function ReviewList({
         }
 
         const response = await axios.get(
-          `/api/reviews?${queryParams.toString()}`
+          `${userOnly ? "/api/auth/me" : `/api/reviews?${queryParams.toString()}`}`
         );
         // Make sure we're setting reviews to an array, even if the response is unexpected
         setReviews(
-          Array.isArray(response.data.reviews) ? response.data.reviews : []
+          Array.isArray(response?.data?.reviews) ? response?.data?.reviews : []
         );
+        console.log(response)
         setPaginationData(
           response.data.pagination || {
             page: 1,
@@ -153,7 +155,7 @@ export function ReviewList({
     filterCategory,
     filterRating,
     userOnly,
-    user?._id || null,
+    user?._id || "",
   ]);
 
   const handlePageChange = (page: number) => {
@@ -261,7 +263,7 @@ export function ReviewList({
                     alt={review?.user?.name}
                   />
                   <AvatarFallback>
-                    {review?.user?.name.charAt(0)}
+                    {review?.user?.name?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
@@ -272,20 +274,7 @@ export function ReviewList({
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center gap-1 text-gray-500"
-                >
-                  <ThumbsUp className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center gap-1 text-gray-500"
-                >
-                  <MessageSquare className="h-4 w-4" />
-                </Button>
+              
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="text-gray-500">

@@ -105,11 +105,11 @@ export default function ProfilePage() {
             <div className="w-full mt-6 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Reviews</span>
-                <span className="font-medium">12</span>
+                <span className="font-medium">{data?.reviews?.length}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Joined</span>
-                <span className="font-medium">March 2023</span>
+                {/* <span className="text-gray-500">Joined</span> */}
+                {/* <span className="font-medium">{data?.createdAt?.toLocaleDateString()}</span> */}
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Hall</span>
