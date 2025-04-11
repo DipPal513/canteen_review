@@ -11,9 +11,12 @@ import {
 import { ReviewList } from "@/components/review-list";
 import { Star, Users, PenSquare } from "lucide-react";
 import { useAppContext } from "@/src/context/AppContext";
+import useFetch from "@/utils/useFetch";
 
 export default function DashboardPage() {
   const { user, loading } = useAppContext();
+  const { data: allUsers } = useFetch("/users");
+  console.log("allusers: ",allUsers)
   console.log("user", user);
   return (
     <div className="space-y-6">
@@ -45,7 +48,7 @@ export default function DashboardPage() {
             <Users className="h-4 w-4 text-[#2E1A73]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">573</div>
+            <div className="text-2xl font-bold">{allUsers?.data?.length}</div>
             <p className="text-xs text-muted-foreground">
               +18% from last month
             </p>
@@ -74,7 +77,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-1">
+        {/* <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Popular Halls</CardTitle>
             <CardDescription>Halls with the most active users</CardDescription>
@@ -128,7 +131,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );
