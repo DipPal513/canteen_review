@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error: any) {
+    console.log("register error: ", error);
     if (error instanceof z.ZodError) {
       // Handle validation errors
       return NextResponse.json(

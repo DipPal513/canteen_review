@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
     const token = request.cookies.get('token')?.value;
     const { pathname } = request.nextUrl;
 
-    const isAuthPage = pathname === '/login' || pathname === '/register';
+    const isAuthPage = pathname === '/login' || pathname === '/register' || pathname == '/forgot-password';
 
     if (!token && !isAuthPage) {
         // Redirect to login if the user is not authenticated and trying to access a protected page

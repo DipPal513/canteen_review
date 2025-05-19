@@ -34,6 +34,7 @@ export default function ForgotPassword() {
       }, 2000);
     } catch (error) {
       toast.error("Failed to send reset email. Please try again.");
+      console.log(error)
     } finally {
       setIsLoading(false);
     }

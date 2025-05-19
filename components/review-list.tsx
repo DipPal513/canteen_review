@@ -52,6 +52,7 @@ interface Review {
   comment: string;
   mealTime: "Breakfast" | "Snacks" | "Dinner" | "Lunch" | "Other";
   createdAt: string;
+  image?: string;
   user: {
     _id: string;
     name: string;
@@ -181,7 +182,7 @@ export function ReviewList({
   const handleEditReview = (reviewId: string) => {
     router.push(`/edit-review?id=${reviewId}`);
   };
-
+console.log(reviews)
   if (loading) {
     return (
       <div className="space-y-4">
@@ -252,6 +253,9 @@ export function ReviewList({
             </CardHeader>
             <CardContent>
               <p className="text-gray-700">{review?.comment}</p>
+             {review?.image &&  <div className="mt-2">
+                <img src={review?.image} alt="review-image" />
+              </div>}
             </CardContent>
             <CardFooter className="flex justify-between pt-2 border-t">
               <div className="flex items-center gap-2">

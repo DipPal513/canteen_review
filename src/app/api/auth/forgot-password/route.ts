@@ -22,11 +22,12 @@ export async function POST(req: NextRequest) {
 
     const { email } = parsedData;
    
-
+    console.log(email)
     await connectDB();
 
     // Find the user by email
     const user = await User.findOne({ email });
+    console.log("is user found: ", user)
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -77,7 +78,7 @@ export async function POST(req: NextRequest) {
       success: true,
     });
   } catch (error: any) {
-    
+    console.log(error);
     if (error instanceof z.ZodError) {
       // Handle validation errors
       return NextResponse.json(

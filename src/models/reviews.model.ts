@@ -35,6 +35,10 @@ const ReviewSchema: Schema = new Schema(
       type: String,
       trim: true,
     },
+    image: {
+      type: String,
+      required: [true, "Image is required"],
+    },
     mealTime: {
       type: String,
       required: [true, "Meal time is required"],
