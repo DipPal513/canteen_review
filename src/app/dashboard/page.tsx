@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { ReviewList } from "@/components/review-list";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,21 +8,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ReviewList } from "@/components/review-list";
-import { Star, Users, PenSquare } from "lucide-react";
 import { useAppContext } from "@/src/context/AppContext";
 import useFetch from "@/utils/useFetch";
+import { PenSquare, Star, Users } from "lucide-react";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { user, loading } = useAppContext();
   const { data: allUsers } = useFetch("/users");
-  console.log("allusers: ",allUsers)
+  console.log("allusers: ", allUsers);
   console.log("user", user);
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <Link href="/reviews/add">
+        <Link href="/dashboard/add-review">
           <Button className="bg-[#2E1A73] hover:bg-[#231259]">
             Add Review
           </Button>
@@ -66,7 +66,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 ">
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Recent Reviews</CardTitle>

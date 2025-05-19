@@ -114,7 +114,7 @@ export default function RegisterPage() {
 
     try {
       const response = await axios.post("/api/auth/register", data, {
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },  validateStatus: () => true,
       });
 
       const result = response.data;

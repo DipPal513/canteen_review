@@ -81,10 +81,10 @@ export default function ReviewForm({
   const handleSubmit = async (values: ReviewFormValues) => {
     setIsLoading(true);
     try {
-      if (!values.user)
-        throw new Error(
-          "User ID is missing. Please log in to submit a review."
-        );
+      // if (!values.user)
+      //   throw new Error(
+      //     "User ID is missing. Please log in to submit a review."
+      //   );
 
       // Prepare the data to match backend expectations
       const reviewData = {
@@ -160,17 +160,9 @@ export default function ReviewForm({
   // If not logged in, show a message
   if (!user) {
     return (
-      <Card className="shadow-lg max-w-screen-xl mx-auto mt-24">
-        <CardHeader>
-          <CardTitle>Authentication Required</CardTitle>
-          <CardDescription>
-            You need to be logged in to submit a review.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={() => router.push("/login")}>Go to Login</Button>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center min-h-screen">
+      <div className="w-12 h-12 border-4 border-black border-dashed rounded-full animate-spin border-t-transparent"></div>
+    </div>
     );
   }
 

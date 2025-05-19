@@ -4,12 +4,10 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Providers } from "@/src/context/Provider";
 import { Home, LogOut, Menu, Plus, Star, User, Users } from "lucide-react";
 import Link from "next/link";
-import type { ReactNode } from "react";
-import { Toaster } from "react-hot-toast";
-import { useState } from "react";
-import { toast } from "react-hot-toast";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
+import { useState } from "react";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -23,8 +21,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         method: "GET",
         credentials: "include",
       });
-
-      if (response?.success) {
+console.log(response)
+      if (response?.status == 200) {
         toast.success("Logged out successfully!");
         setShowLogoutModal(false);
         router.push("/login"); // Redirect to login page
@@ -205,7 +203,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <span>Reviews</span>
             </Link>
             <Link
-              href="/reviews/add"
+              href="/dashboard/add-review"
               className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700 hover:text-[#2E1A73] pl-10"
             >
               <Plus className="h-5 w-5" />

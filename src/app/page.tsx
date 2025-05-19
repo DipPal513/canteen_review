@@ -17,7 +17,9 @@ export default function Home() {
           {user ? (
             <>
               {" "}
-              <p className="hidden sm:flex text-sm sm:text-md font-bold">{user?.name}</p>
+              <p className="hidden sm:flex text-sm sm:text-md font-bold">
+                {user?.name}
+              </p>
               <Link
                 href={"/dashboard"}
                 className="bg-indigo-400 hover:bg-indigo-800 rounded-md px-2 sm:px-3 py-1 text-sm sm:text-lg"
@@ -65,7 +67,7 @@ export default function Home() {
                 Share your experiences about courses, professors, and campus
                 facilities.
               </p>
-              <Link href="/reviews/add">
+              <Link href="/dashboard/add-review">
                 <Button className="w-full bg-[#2E1A73] hover:bg-[#231259]">
                   Add Review
                 </Button>
@@ -121,8 +123,7 @@ export default function Home() {
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-4 md:mb-0">
-            <img src="/logo.png" 
-          width={50}alt="logo" />
+              <img src="/logo.png" width={50} alt="logo" />
               <span className="font-semibold">DU Canteen Review</span>
             </div>
             <div className="text-sm text-white/80 text-center">

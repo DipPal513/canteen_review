@@ -97,7 +97,18 @@ export function ReviewList({
   const { user } = appContext;
   const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
   const router = useRouter();
+const [modalImage, setModalImage] = useState<string | null>(null);
+const [isModalOpen, setIsModalOpen] = useState(false);
 
+const openImageModal = (image: string) => {
+  setModalImage(image);
+  setIsModalOpen(true);
+};
+
+const closeImageModal = () => {
+  setIsModalOpen(false);
+  setModalImage(null);
+};
   useEffect(() => {
     const fetchReviews = async () => {
       setLoading(true);
@@ -208,7 +219,7 @@ console.log(reviews)
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-10">
           <p className="text-muted-foreground mb-4">No reviews found</p>
-          <Link href="/reviews/add">
+          <Link href="/dashboard/add-review">
             <Button className="bg-[#2E1A73] hover:bg-[#231259]">
               Add a Review
             </Button>
@@ -219,7 +230,7 @@ console.log(reviews)
   }
 
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-3">
       {reviews &&
         reviews.map((review) => (
           <Card key={review?._id}>
@@ -254,7 +265,10 @@ console.log(reviews)
             <CardContent>
               <p className="text-gray-700">{review?.comment}</p>
              {review?.image &&  <div className="mt-2">
+              <div onClick={() => openImageModal(review?.image)}>
+                
                 <img src={review?.image} alt="review-image" />
+              </div>
               </div>}
             </CardContent>
             <CardFooter className="flex justify-between pt-2 border-t">
@@ -421,6 +435,31 @@ console.log(reviews)
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {isModalOpen && modalImage && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center"
+    onClick={closeImageModal}
+  >
+    <div
+      className="max-w-full max-h-full p-4"
+      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on image
+    >
+      <img
+        src={modalImage}
+        alt="Modal Preview"
+        className="max-w-[90vw] max-h-[90vh] rounded-md object-contain"
+      />
+    </div>
+    <button
+      className="absolute top-4 right-4 text-white text-xl"
+      onClick={closeImageModal}
+    >
+      ✕
+    </button>
+  </div>
+)}
+
     </div>
   );
 }
